@@ -9,7 +9,7 @@ db = SQLAlchemy(app)
 app.secret_key = 'secret_key'
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///crud.db'
-
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///level_sensor_data.db'
 
 
 class User(db.Model):
@@ -31,6 +31,19 @@ class Crud(db.Model):
     vehicle = db.Column(db.String(100), nullable=False)
     type = db.Column(db.String(100), unique=True)
     fuel_consumption = db.Column(db.String(100))
+
+
+class LevelSensorData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(100))
+    full_addr = db.Column(db.String(100))
+    sensor_data = db.Column(db.Float)
+    imei = db.Column(db.String(100))
+
+    def __repr__(self):
+        return f"<LevelSensorData(date='{self.date}', full_addr='{self.full_addr}', sensor_data={self.sensor_data}, imei='{self.imei}')>"
+
+
 
 
 with app.app_context():
@@ -117,8 +130,13 @@ def dashboard():
         crud_entries = Crud.query.all()
         labels = [entry.vehicle for entry in crud_entries]
         data = [float(entry.fuel_consumption) for entry in crud_entries]
-        return render_template('dashboard.html', user=user, crud_entries=crud_entries, labels=labels, data=data)
+        sense_data = LevelSensorData.query.all()
+
+        return render_template('dashboard.html', user=user, crud_entries=crud_entries, labels=labels, data=data,sense_data=sense_data)
    
+
+
+        
     return redirect('/login')
 
 @app.route('/logout')
@@ -238,7 +256,26 @@ def api_crud_entry(id):
         db.session.commit()
         return jsonify({"message": "Entry deleted successfully"}), 200
 
+@app.route('/level_sensor_data', methods=['POST'])
+def receive_level_sensor_data():
+    if request.method == 'POST':
+        sense_data = request.json
 
+        # Extracting data from JSON
+        date = sense_data.get('D', '')
+        full_addr = sense_data.get('address', '')
+        sensor_data = sense_data.get('data', '')
+        imei = sense_data.get('IMEI', '')
+
+        # Create a new LevelSensorData object and add it to the database
+        new_data = LevelSensorData(date=date, full_addr=full_addr, sensor_data=sensor_data, imei=imei)
+        db.session.add(new_data)
+        db.session.commit()
+
+        # Return a response
+        response = {'status': 'success', 'message': 'Data received and stored successfully'}
+        return jsonify(response), 200
+    return redirect('/dashboard')
 
 if __name__ == '__main__':
     app.run(debug=True)
