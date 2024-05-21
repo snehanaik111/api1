@@ -115,7 +115,10 @@ def dashboard():
     if 'email' in session:
         user = User.query.filter_by(email=session['email']).first()
         crud_entries = Crud.query.all()
-        return render_template('dashboard.html', user=user, crud_entries=crud_entries)
+        labels = [entry.vehicle for entry in crud_entries]
+        data = [float(entry.fuel_consumption) for entry in crud_entries]
+        return render_template('dashboard.html', user=user, crud_entries=crud_entries, labels=labels, data=data)
+   
     return redirect('/login')
 
 @app.route('/logout')
