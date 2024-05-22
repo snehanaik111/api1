@@ -259,22 +259,28 @@ def api_crud_entry(id):
 @app.route('/level_sensor_data', methods=['POST'])
 def receive_level_sensor_data():
     if request.method == 'POST':
-        sense_data = json.loads(request.json['modbus_TEST'])
+        try:
+            sense_data_str = request.json['modbus_TEST']
+            sense_data = json.loads(sense_data_str)
 
-        # Extracting data from JSON
-        date = sense_data.get('D', '')
-        full_addr = sense_data.get('address', '')
-        sensor_data = sense_data.get('data', '')
-        imei = sense_data.get('IMEI', '')
+            # Extracting data from JSON
+            date = sense_data.get('D', '')
+            full_addr = sense_data.get('address', '')
+            sensor_data = sense_data.get('data', '')
+            imei = sense_data.get('IMEI', '')
 
-        # Create a new LevelSensorData object and add it to the database
-        new_data = LevelSensorData(date=date, full_addr=full_addr, sensor_data=sensor_data, imei=imei)
-        db.session.add(new_data)
-        db.session.commit()
+            # Create a new LevelSensorData object and add it to the database
+            new_data = LevelSensorData(date=date, full_addr=full_addr, sensor_data=sensor_data, imei=imei)
+            db.session.add(new_data)
+            db.session.commit()
 
-        # Return a response
-        response = {'status': 'success', 'message': 'Data received and stored successfully'}
-        return jsonify(response), 200
+            # Return a success response
+            response = {'status': 'success', 'message': 'Data received and stored successfully'}
+            return jsonify(response), 200
+        except Exception as e:
+            # Return an error response
+            response = {'status': 'error', 'message': str(e)}
+            return jsonify(response), 500
     return redirect('/dashboard')
 
 if __name__ == '__main__':
