@@ -259,7 +259,7 @@ def api_crud_entry(id):
 @app.route('/level_sensor_data', methods=['POST'])
 def receive_level_sensor_data():
     if request.method == 'POST':
-        sense_data = request.json
+        sense_data = request.json['modbus_TEST']
 
         # Extracting data from JSON
         date = sense_data.get('D', '')
