@@ -37,7 +37,7 @@ class LevelSensorData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.String(100))
     full_addr = db.Column(db.String(100))
-    sensor_data = db.Column(db.Float)
+    sensor_data = db.Column(db.String(100))
     imei = db.Column(db.String(100))
 
     def __repr__(self):
