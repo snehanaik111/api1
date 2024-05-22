@@ -1,7 +1,7 @@
 from flask import Flask, request,render_template, redirect,session,url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-import json
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -261,7 +261,7 @@ def receive_level_sensor_data():
     if request.method == 'POST':
         try:
             sense_data_str = request.json['modbus_TEST']
-            sense_data = json.loads(sense_data_str)
+           
 
             # Extracting data from JSON
             date = sense_data.get('D', '')
