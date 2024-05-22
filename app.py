@@ -256,31 +256,28 @@ def api_crud_entry(id):
         db.session.commit()
         return jsonify({"message": "Entry deleted successfully"}), 200
 
+
 @app.route('/level_sensor_data', methods=['POST'])
 def receive_level_sensor_data():
     if request.method == 'POST':
-        try:
-            sense_data = request.json['modbus_TEST']
-           
+        sense_data = request.json
+# if therre is commma , mean sensor value (if() {val = split value by , and get first} )
 
-            # Extracting data from JSON
-            date = sense_data.get('D', '')
-            full_addr = sense_data.get('address', '')
-            sensor_data = sense_data.get('data', '')
-            imei = sense_data.get('IMEI', '')
 
-            # Create a new LevelSensorData object and add it to the database
-            new_data = LevelSensorData(date=date, full_addr=full_addr, sensor_data=sensor_data, imei=imei)
-            db.session.add(new_data)
-            db.session.commit()
+        # Extracting data from JSON
+        date = sense_data.get('D', '')
+        full_addr = sense_data.get('address', '')
+        sensor_data = sense_data.get('data', '')
+        imei = sense_data.get('IMEI', '')
 
-            # Return a success response
-            response = {'status': 'success', 'message': 'Data received and stored successfully'}
-            return jsonify(response), 200
-        except Exception as e:
-            # Return an error response
-            response = {'status': 'error', 'message': str(e)}
-            return jsonify(response), 500
+        # Create a new LevelSensorData object and add it to the database
+        new_data = LevelSensorData(date=date, full_addr=full_addr, sensor_data=sensor_data, imei=imei)
+        db.session.add(new_data)
+        db.session.commit()
+
+        # Return a response
+        response = {'status': 'success', 'message': 'Data received and stored successfully'}
+        return jsonify(response), 200
     return redirect('/dashboard')
 
 if __name__ == '__main__':
