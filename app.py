@@ -1,7 +1,7 @@
 from flask import Flask, request,render_template, redirect,session,url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-
+import json
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
