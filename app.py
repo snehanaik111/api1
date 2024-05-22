@@ -260,7 +260,7 @@ def api_crud_entry(id):
 def receive_level_sensor_data():
     if request.method == 'POST':
         try:
-            sense_data_str = request.json['modbus_TEST']
+            sense_data = request.json['modbus_TEST']
            
 
             # Extracting data from JSON
